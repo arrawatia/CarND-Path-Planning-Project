@@ -254,7 +254,7 @@ int main()
           }
 
           // PREDICT STEP - Figure out where other cars on the road will be in future.
-          bool take_action = false;
+          bool is_too_close_to_car_ahead = false;
           bool is_left_lane_occupied = false;
           bool is_right_lane_occupied = false;
           for (int i = 0; i < sensor_fusion.size(); i++)
@@ -301,7 +301,7 @@ int main()
 
               bool is_car_in_front = other_car_s > car_s;
               bool is_class_less_than_30m_away = (other_car_s - car_s) < 30;
-              take_action |= is_car_in_front && is_class_less_than_30m_away;
+              is_too_close_to_car_ahead |= is_car_in_front && is_class_less_than_30m_away;
             }
             else
             {
@@ -325,7 +325,7 @@ int main()
           double velocity_change = 0;
           const double MAX_VELOCITY = 49.5;
           const double MAX_ACCELERATION = .224;
-          if (take_action)
+          if (is_too_close_to_car_ahead)
           { // Move to the left lane if not already in the left most lane and it is safe to do so.
             if (!is_left_lane_occupied && lane > 0)
             {
