@@ -202,9 +202,9 @@ int main()
   int lane = 1;
 
   // Reference velocity.
-  double ref_vel = 0.0; // mph
+  double reference_velocity = 0.0; // mph
 
-  h.onMessage([&ref_vel, &lane, &map_waypoints_x, &map_waypoints_y, &map_waypoints_s, &map_waypoints_dx, &map_waypoints_dy](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
+  h.onMessage([&reference_velocity, &lane, &map_waypoints_x, &map_waypoints_y, &map_waypoints_s, &map_waypoints_dx, &map_waypoints_dy](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -323,7 +323,7 @@ int main()
 
           // BEHAVIOR PLANNING - Change lanes if it safe or reduce speed.
           double velocity_change = 0;
-          const double MAX_SPEED = 49.5;
+          const double MAX_VELOCITY = 49.5;
           const double MAX_ACCELERATION = .224;
           if (take_action)
           { // Move to the left lane if not already in the left most lane and it is safe to do so.
@@ -351,7 +351,7 @@ int main()
               }
             }
             // Speed up so that the car travels at the optimum velocity.
-            if (ref_vel < MAX_SPEED)
+            if (reference_velocity < MAX_VELOCITY)
             {
               velocity_change += MAX_ACCELERATION;
             }
@@ -474,19 +474,19 @@ int main()
           int points_delta = 50 - previous_path_size;
           for (int i = 1; i < points_delta; i++)
           {
-            ref_vel += velocity_change;
-            if (ref_vel > MAX_SPEED)
+            reference_velocity += velocity_change;
+            if (reference_velocity > MAX_VELOCITY)
             {
-              ref_vel = MAX_SPEED;
+              reference_velocity = MAX_VELOCITY;
             }
-            else if (ref_vel < MAX_ACCELERATION)
+            else if (reference_velocity < MAX_ACCELERATION)
             {
-              ref_vel = MAX_ACCELERATION;
+              reference_velocity = MAX_ACCELERATION;
             }
 
-            double ref_vel_m_per_s = ref_vel / 2.24;
+            double reference_velocity_m_per_s = reference_velocity / 2.24;
             // Number of spline segments required to maintain reference velocity
-            double N = target_distance / (0.02 * ref_vel_m_per_s);
+            double N = target_distance / (0.02 * reference_velocity_m_per_s);
 
             // Size of each spline segment
             double segment_size = target_x / N;
